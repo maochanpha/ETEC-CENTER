@@ -1,5 +1,7 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "db_php");
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+try{
+    $conn = mysqli_connect("localhost", "root", "", "db_php");
+}  catch(Exception $e){
+    echo "Connection failed: " . $e->getMessage();
+};
+?>
