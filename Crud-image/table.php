@@ -137,6 +137,8 @@ $(document).ready(function(){
 
         $('#btnSubmit').hide(); 
         $('#btnUpdate').show();
+        
+        $('#exampleModalLabel').text('Edit Product');
 
         $('form').attr('action', 'update.php?id=' + id);
     });
