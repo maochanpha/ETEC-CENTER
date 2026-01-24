@@ -9,7 +9,7 @@ if(isset($_POST['btnSubmit'])){
     $tmp_name = $_FILES['image']['tmp_name'];
     $path = "upload/".$image;
     move_uploaded_file($tmp_name, $path);
-    $sql = "INSERT INTO tbl_product (product_name, qty, price, total, image) VALUES ('$pro_name', '$quantity', '$price', '$total', '$image')";
+    $sql = "INSERT INTO tbl_product (product_name, qty, price, total, image) VALUES ('$pro_name', '$quantity', '$price', '$total', '$path')";
     $execute = mysqli_query($conn, $sql);
     if($execute){
         header("Location: table.php");

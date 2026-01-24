@@ -62,7 +62,7 @@
     </div>
   </div>
 </div>
-                    <?php 
+                <?php 
                     include 'db.php';
                     $select = "SELECT * FROM tbl_product";
                     $execute = mysqli_query($conn, $select);
@@ -74,7 +74,7 @@
                         echo "<td>".$row['price']."</td>";
                         $total = $row['qty'] * $row['price'];
                         echo "<td>".$total."</td>";
-                        echo "<td><img src='upload/".$row['image']."' width='80px' height='80px'/></td>";
+                        echo "<td><img src='".$row['image']."' width='80px' height='80px'/></td>";
                         echo "<td>
                             <button class='btn btn-outline-warning btn-sm edit-btn' 
                                 data-id='".$row['id']."' 
@@ -86,12 +86,16 @@
                                 data-bs-target='#exampleModal'>
                                 Edit
                             </button>
-                            <a href='delete.php?id=".$row['id']."' class='btn btn-outline-danger btn-sm' onclick='return confirm(\"Are you sure you want to delete this product?\")'>Delete</a>
+                            <div class = 'd-flex justify-content-center gap-2'>
+                                <form action = 'delete.php' method='POST'>
+                                    <input type='hidden' name='id' value='".$row['id']."'>
+                                    <button type='submit' name='btnDelete' class='btn btn-outline-danger btn-sm'>Delete</button>
+                                </form>
+                            </div>
                         </td>";
                         echo "</tr>";
                     }
                     ?>
-
             </tbody>
         </table>
      </div>

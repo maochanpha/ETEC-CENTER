@@ -1,7 +1,7 @@
 <?php
-if(isset($_GET['id'])){
+if(isset($_POST['btnDelete'])){
     include 'db.php';
-    $id = $_GET['id'];
+    $id = $_POST['id'];
     $delete = "DELETE FROM tbl_product WHERE id= $id";
     $execute = mysqli_query($conn, $delete);
     if($execute){
