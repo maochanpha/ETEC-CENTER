@@ -10,9 +10,9 @@
 </head>
 <body>
                 <div class="container mt-4 shadow p-5 rounded-3">
-                    <button type="button" class="btn btn-outline-dark float-end" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                        Add New Product
-                    </button>        
+                <button type="button" id="add" class="btn btn-outline-dark float-end mb-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    +Add Product
+                </button>        
             <table class="table table-hover text-center">
                         <thead>
                             <tr class="table-hover">
@@ -52,48 +52,43 @@
             <img src="https://i.pinimg.com/736x/f6/dc/7e/f6dc7eb253892a7f33fad027e153e041.jpg" width="110px" height="113px" alt="image" id="image" class="m-2">
             <input type="file" id="file" name="image">
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="submit" name="btnSubmit" id="btnSubmit" class="btn btn-primary">Save</button>
-            <button type="submit" name="btnUpdate" id="btnUpdate" class="btn btn-warning">Update</button>
-          </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" id="save" name="submit" class="btn btn-primary">Save</button>
+                <button type="submit" id="update" name="update" class="btn btn-warning">Update</button>
+            </div>
         </form>
       </div>
     </div>
   </div>
 </div>
-                <?php 
-                    include 'db.php';
-                    $select = "SELECT * FROM tbl_product";
-                    $execute = mysqli_query($conn, $select);
-                    while($row = mysqli_fetch_array($execute)){
-                        echo "<tr>";
-                        echo "<td>".$row['id']."</td>";
-                        echo "<td>".$row['product_name']."</td>";
-                        echo "<td>".$row['qty']."</td>";
-                        echo "<td>".$row['price']."</td>";
-                        $total = $row['qty'] * $row['price'];
-                        echo "<td>".$total."</td>";
-                        echo "<td><img src='".$row['image']."' width='80px' height='80px'/></td>";
-                        echo "<td>
-                            <button class='btn btn-outline-warning btn-sm edit-btn' 
-                                data-id='".$row['id']."' 
-                                data-name='".$row['product_name']."' 
-                                data-qty='".$row['qty']."' 
-                                data-price='".$row['price']."' 
-                                data-image='".$row['image']."' 
-                                data-bs-toggle='modal' 
-                                data-bs-target='#exampleModal'>
-                                Edit
-                            </button>
-                            <div class = 'd-flex justify-content-center gap-2'>
-                                <form action = 'delete.php' method='POST'>
-                                    <input type='hidden' name='id' value='".$row['id']."'>
-                                    <button type='submit' name='btnDelete' class='btn btn-outline-danger btn-sm'>Delete</button>
-                                </form>
-                            </div>
-                        </td>";
-                        echo "</tr>";
+        <?php 
+                    require 'db.php';
+                    $select="SELECT * FROM tbl_product";
+                    $result=$conn->query($select);
+                    while($row=mysqli_fetch_assoc($result)){
+                        echo '
+                        <tr>
+                            <td>'.$row['id'].'</td>
+                            <td>'.$row['product_name'].'</td>
+                            <td>'.$row['qty'].'</td>
+                            <td>$'.$row['price'].'</td>
+                            <td>$'.$row['total'].'</td>
+                            <td>
+                                <img id="img" src="'.$row['image'].'" width="35" alt="">
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <form action="delete.php" method="post">
+                                        <input type="hidden" name="id" value="'.$row['id'].'">
+                                        <button name="btnDelete" class="btn btn-outline-danger" onclick="return confirm(\'Are you sure?\')">Delete</button>
+                                    </form>
+                                    <button id="edit" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#exampleModal">Edit</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        ';
                     }
                     ?>
             </tbody>
@@ -102,60 +97,45 @@
 </body>
     </html>
 <script>
-$(document).ready(function(){
-    $('#file').hide();
-
-    $('#image').click(function(){
-        $('#file').click();
-    });
-
-    $('#file').change(function(){
-        let file = this.files[0];
-        if(file){
-            let image = URL.createObjectURL(file);
-            $('#image').attr('src', image);
-        }
-    });
-
-    $('[data-bs-target="#exampleModal"]').not('.edit-btn').click(function(){
-        $('form')[0].reset();
-        $('#image').attr('src', 'https://i.pinimg.com/736x/f6/dc/7e/f6dc7eb253892a7f33fad027e153e041.jpg');
-
-        $('#btnSubmit').show();
-        $('#btnUpdate').hide();
-
-        $('form').attr('action', 'insert.php');
-    });
-
-    $('.edit-btn').click(function(){
-        let id = $(this).data('id');
-        let name = $(this).data('name');
-        let qty = $(this).data('qty');
-        let price = $(this).data('price');
-        let image = $(this).data('image');
-
-        $('#pro_name').val(name);
-        $('#quantity').val(qty);
-        $('#price').val(price);
-        $('#image').attr('src', 'upload/' + image);
-
-        $('#btnSubmit').hide(); 
-        $('#btnUpdate').show();
-        
-        $('#exampleModalLabel').text('Edit Product');
-
-        $('form').attr('action', 'update.php?id=' + id);
-    });
-
-    $('#exampleModal').on('hidden.bs.modal', function () {
-        $('form')[0].reset();
-        $('#image').attr('src', 'https://i.pinimg.com/736x/f6/dc/7e/f6dc7eb253892a7f33fad027e153e041.jpg');
-        $('#btnSubmit').show();
-        $('#btnUpdate').hide();
-        $('form').attr('action', 'insert.php');
-    });
-
-    $('#btnUpdate').hide();
-});
+    $(document).ready(function(){
+        $('#file').hide()
+        $('#image').click(function(){
+            $('#file').click()
+        })
+        $('#file').change(function(){
+            let file=this.files[0]
+            if(file){
+                let image=URL.createObjectURL(file)
+                $('#image').attr('src',image)
+            }
+        })
+        $('#add').click(function(){
+            $('#save').show()
+            $('#update').hide()
+            $('#exampleModalLabel').text('Add Product')
+            $('#form').attr('action','insert.php')
+            $('#form').trigger('reset')
+        })
+        $(document).on('click','#edit',function(){
+            $('#save').hide()
+            $('#update').show()
+            $('#exampleModalLabel').text('Edit Product')
+            $('#form').attr('action','update.php')
+            const row=$(this).closest('tr');
+            const id=row.find('td:eq(0)').text().trim()
+            const pro_name=row.find('td:eq(1)').text().trim()
+            const qty=row.find('td:eq(2)').text().trim()
+            const price=row.find('td:eq(3)').text().trim().slice(1)
+            const image=$('#img').attr('src')
+            console.log(price);
+            
+            $('#id').val(id)
+            $('#pro_name').val(pro_name)
+            $('#qty').val(qty)
+            $('#price').val(price)
+            $('#image').attr('src',image)
+            
+        })
+    })
 
 </script>

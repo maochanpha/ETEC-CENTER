@@ -1,5 +1,5 @@
 <?php
-if(isset($_POST['btnSubmit'])){
+if(isset($_POST['submit'])){
     include 'db.php';
     $pro_name = $_POST['pro_name'];
     $quantity = $_POST['quantity'];
