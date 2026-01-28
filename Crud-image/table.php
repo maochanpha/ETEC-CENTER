@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,79 +9,81 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <title>Document</title>
 </head>
+
 <body>
-                <div class="container mt-4 shadow p-5 rounded-3">
-                <button type="button" id="add" class="btn btn-outline-dark float-end mb-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                    +Add Product
-                </button>        
-            <table class="table table-hover text-center">
-                        <thead>
-                            <tr class="table-hover">
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Quantity</th>
-                                <th>Price</th>
-                                <th>Total</th>
-                                <th>Image</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+    <div class="container mt-4 shadow p-5 rounded-3">
+        <button type="button" id="add" class="btn btn-outline-dark float-end mb-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            +Add Product
+        </button>
+        <table class="table table-hover text-center">
+            <thead>
+                <tr class="table-hover">
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                    <th>Image</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
                 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Add Product</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form action="insert.php" method="POST" enctype="multipart/form-data">
-          <div class="mb-3">
-            <label class="col-form-label">Product Name:</label>
-            <input type="text" class="form-control" id="pro_name" name="pro_name">
-          </div>
-          <div class="mb-3">
-            <label class="col-form-label">Quantity:</label>
-            <input type="number" class="form-control" id="quantity" name="quantity">
-          </div>
-          <div class="mb-3">
-            <label class="col-form-label">Price:</label>
-            <input type="number" class="form-control" id="price" name="price">
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Image:</label><br>
-            <img src="https://i.pinimg.com/736x/f6/dc/7e/f6dc7eb253892a7f33fad027e153e041.jpg" width="110px" height="113px" alt="image" id="image" class="m-2">
-            <input type="file" id="file" name="image">
-          </div>
-                <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" id="save" name="submit" class="btn btn-primary">Save</button>
-                <button type="submit" id="update" name="update" class="btn btn-warning">Update</button>
-            </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-        <?php 
-                    require 'db.php';
-                    $select="SELECT * FROM tbl_product";
-                    $result=$conn->query($select);
-                    while($row=mysqli_fetch_assoc($result)){
-                        echo '
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Add Product</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="form" action="insert.php" method="POST" enctype="multipart/form-data">
+                                    <input type="hidden" id="id" name="id">
+                                    <div class="mb-3">
+                                        <label class="col-form-label">Product Name:</label>
+                                        <input type="text" class="form-control" id="pro_name" name="pro_name">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="col-form-label">Quantity:</label>
+                                        <input type="number" class="form-control" id="quantity" name="quantity">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="col-form-label">Price:</label>
+                                        <input type="number" class="form-control" id="price" name="price">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Image:</label><br>
+                                        <img src="https://i.pinimg.com/736x/f6/dc/7e/f6dc7eb253892a7f33fad027e153e041.jpg" width="110px" height="113px" alt="" id="image" class="m-2">
+                                        <input type="file" id="file" name="file">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" id="save" name="submit" class="btn btn-primary">Save</button>
+                                        <button type="submit" id="update" name="update" class="btn btn-warning">Update</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php
+                include 'db.php';
+                $select = "SELECT * FROM tbl_product";
+                $result = $conn->query($select);
+                while ($row = mysqli_fetch_assoc($result)) {
+                    echo '
                         <tr>
-                            <td>'.$row['id'].'</td>
-                            <td>'.$row['product_name'].'</td>
-                            <td>'.$row['qty'].'</td>
-                            <td>$'.$row['price'].'</td>
-                            <td>$'.$row['total'].'</td>
+                            <td>' . $row['id'] . '</td>
+                            <td>' . $row['product_name'] . '</td>
+                            <td>' . $row['qty'] . '</td>
+                            <td>$' . $row['price'] . '</td>
+                            <td>$' . $row['total'] . '</td>
                             <td>
-                                <img id="img" src="'.$row['image'].'" width="35" alt="">
+                                <img id="img" src="' . $row['image'] . '" width="35" alt="">
                             </td>
                             <td>
                                 <div class="d-flex justify-content-center gap-2">
                                     <form action="delete.php" method="post">
-                                        <input type="hidden" name="id" value="'.$row['id'].'">
+                                        <input type="hidden" name="id" value="' . $row['id'] . '">
                                         <button name="btnDelete" class="btn btn-outline-danger" onclick="return confirm(\'Are you sure?\')">Delete</button>
                                     </form>
                                     <button id="edit" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#exampleModal">Edit</button>
@@ -89,53 +92,52 @@
                         </tr>
 
                         ';
-                    }
-                    ?>
+                }
+                ?>
             </tbody>
         </table>
-     </div>
+    </div>
 </body>
-    </html>
+
+</html>
 <script>
-    $(document).ready(function(){
+    $(document).ready(function() {
         $('#file').hide()
-        $('#image').click(function(){
+        $('#image').click(function() {
             $('#file').click()
         })
-        $('#file').change(function(){
-            let file=this.files[0]
-            if(file){
-                let image=URL.createObjectURL(file)
-                $('#image').attr('src',image)
+        $('#file').change(function() {
+            let file = this.files[0]
+            if (file) {
+                let image = URL.createObjectURL(file)
+                $('#image').attr('src', image)
             }
         })
-        $('#add').click(function(){
+        $('#add').click(function() {
             $('#save').show()
             $('#update').hide()
             $('#exampleModalLabel').text('Add Product')
-            $('#form').attr('action','insert.php')
+            $('#form').attr('action', 'insert.php')
             $('#form').trigger('reset')
         })
-        $(document).on('click','#edit',function(){
+        $(document).on('click', '#edit', function() {
             $('#save').hide()
             $('#update').show()
             $('#exampleModalLabel').text('Edit Product')
-            $('#form').attr('action','update.php')
-            const row=$(this).closest('tr');
-            const id=row.find('td:eq(0)').text().trim()
-            const pro_name=row.find('td:eq(1)').text().trim()
-            const qty=row.find('td:eq(2)').text().trim()
-            const price=row.find('td:eq(3)').text().trim().slice(1)
-            const image=$('#img').attr('src')
-            console.log(price);
-            
+            $('#form').attr('action', 'update.php')
+            const row = $(this).closest('tr');
+            const id = row.find('td:eq(0)').text().trim()
+            const pro_name = row.find('td:eq(1)').text().trim()
+            const qty = row.find('td:eq(2)').text().trim()
+            const price = row.find('td:eq(3)').text().trim().slice(1)
+            const image = $('#img').attr('src')
+
             $('#id').val(id)
             $('#pro_name').val(pro_name)
-            $('#qty').val(qty)
+            $('#quantity').val(qty)
             $('#price').val(price)
-            $('#image').attr('src',image)
-            
+            $('#image').attr('src', image)
+
         })
     })
-
 </script>

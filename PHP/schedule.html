@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Super Weekly Planner</title>
+    <style>
+      /* --- Basic Layout --- */
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        transition: background 2s;
+        background: linear-gradient(
+          135deg,
+          #e6f0ff,
+          #d0e4ff,
+          #f0f8ff
+        ); /* pastel light blue gradient */
+        color: #1c1c1c;
+      }
+
+      header {
+        text-align: center;
+        padding: 25px 20px;
+        background: #d0e4ff;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 2.2rem;
+        color: #3399ff;
+        font-weight: 600;
+      }
+
+      p {
+        margin: 5px 0;
+        font-style: italic;
+        color: #555;
+        font-size: 0.95rem;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 30px 20px;
+      }
+
+      /* --- Days & Tasks --- */
+      .day {
+        margin: 20px 0;
+        border-radius: 20px;
+        background: #ffffffdd;
+        padding: 25px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        transition:
+          transform 0.25s,
+          box-shadow 0.25s;
+      }
+      .day:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+      }
+
+      .day h2 {
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #3399ff;
+        font-size: 1.35rem;
+        font-weight: 600;
+      }
+
+      .tasks {
+        margin-top: 20px;
+        display: none;
+      }
+
+      .task {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+        padding: 10px 15px;
+        border-radius: 16px;
+        cursor: grab;
+        transition:
+          background 0.3s,
+          transform 0.2s,
+          box-shadow 0.2s;
+        background: #f0f8ff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      }
+      .task:hover {
+        transform: scale(1.02);
+        background: #e0f2ff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .task input {
+        margin-right: 15px;
+        transform: scale(1.3);
+        accent-color: #3399ff;
+      }
+
+      .task span {
+        flex: 1;
+        padding: 6px 14px;
+        border-radius: 12px;
+        font-weight: 500;
+        font-size: 0.95rem;
+      }
+
+      /* Priority Borders */
+      .high {
+        border-left: 5px solid #007acc;
+      }
+      .medium {
+        border-left: 5px solid #66b3ff;
+      }
+      .low {
+        border-left: 5px solid #99ccff;
+      }
+
+      /* Task Colors */
+      .blue {
+        background: #cce5ff;
+      }
+      .green {
+        background: #d0f0d0;
+      }
+      .orange {
+        background: #fff4cc;
+      }
+      .pink {
+        background: #ffd9e6;
+      }
+      .purple {
+        background: #e6ccff;
+      }
+
+      /* --- Buttons & Legend --- */
+      button {
+        padding: 12px 20px;
+        margin: 10px 0;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        background: #66b3ff;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #fff;
+        transition:
+          background 0.3s,
+          transform 0.2s;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      button:hover {
+        background: #3399ff;
+        transform: translateY(-2px);
+      }
+
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 20px 0;
+      }
+      .legend div {
+        margin-right: 20px;
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+        font-weight: 500;
+        font-size: 0.9rem;
+      }
+      .color-box {
+        width: 24px;
+        height: 24px;
+        margin-right: 8px;
+        border-radius: 6px;
+      }
+
+      /* --- Progress Bar --- */
+      .progress-container {
+        background: #e0e0e0;
+        border-radius: 15px;
+        overflow: hidden;
+        height: 18px;
+        margin: 15px 0;
+      }
+      .progress-bar {
+        background: #3399ff;
+        height: 100%;
+        width: 0%;
+        transition: width 0.5s;
+        border-radius: 15px;
+      }
+
+      /* --- Notes --- */
+      .notes {
+        width: 100%;
+        min-height: 70px;
+        margin-top: 10px;
+        border-radius: 16px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        font-size: 0.95rem;
+        resize: vertical;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+        background: #f9faff;
+      }
+
+      /* --- Confetti --- */
+      canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        z-index: 9999;
+      }
+
+      /* --- Print --- */
+      @media print {
+        body {
+          background: #fff;
+        }
+        button,
+        canvas {
+          display: none;
+        }
+        .day {
+          box-shadow: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Super Weekly Planner</h1>
+      <p>Sleep: 11:00 pm – 7:30 am | Peak Energy: Night 🌙</p>
+      <div
+        id="quote"
+        style="margin-top: 10px; font-style: italic; color: #555"
+      ></div>
+    </header>
+
+    <div class="container">
+      <div>
+        <label>Filter Tasks: </label>
+        <select id="filter">
+          <option value="all">All</option>
+          <option value="blue">Uni</option>
+          <option value="green">Coding</option>
+          <option value="orange">Course</option>
+          <option value="pink">Chill</option>
+        </select>
+      </div>
+
+      <!-- Monday -->
+      <div class="day" data-day="mon">
+        <h2 onclick="toggleTasks(this)">Monday ▼</h2>
+        <div class="progress-container">
+          <div class="progress-bar" id="progressMon"></div>
+        </div>
+        <div class="tasks" id="monTasks">
+          <!-- Morning -->
+          <div class="task pink low" draggable="true" id="mon1">
+            <input type="checkbox" /><span>7:30–8:00 → Wake up + routine</span>
+          </div>
+          <div class="task pink low" draggable="true" id="mon2">
+            <input type="checkbox" /><span
+              >8:00–8:30 → Light movement/stretch</span
+            >
+          </div>
+          <div class="task blue high" draggable="true" id="mon3">
+            <input type="checkbox" /><span>8:30–9:30 → PUC Spell Online</span>
+          </div>
+          <div class="task pink low" draggable="true" id="mon4">
+            <input type="checkbox" /><span>9:30–9:45 → Break</span>
+          </div>
+          <div class="task green medium" draggable="true" id="mon5">
+            <input type="checkbox" /><span
+              >9:45–10:45 → Coding / Portfolio</span
+            >
+          </div>
+          <div class="task pink low" draggable="true" id="mon6">
+            <input type="checkbox" /><span>10:45–11:00 → Rest</span>
+          </div>
+          <!-- Afternoon -->
+          <div class="task orange medium" draggable="true" id="mon7">
+            <input type="checkbox" /><span
+              >2:00–3:15 → Backend short course</span
+            >
+          </div>
+          <div class="task pink low" draggable="true" id="mon8">
+            <input type="checkbox" /><span>3:15–4:30 → Eat + rest + chill</span>
+          </div>
+          <!-- Evening -->
+          <div class="task orange high" draggable="true" id="mon9">
+            <input type="checkbox" /><span>4:30–8:30 → English class</span>
+          </div>
+          <!-- Night -->
+          <div class="task green medium" draggable="true" id="mon10">
+            <input type="checkbox" /><span>9:00–9:45 → Coding / Uni work</span>
+          </div>
+          <div class="task pink low" draggable="true" id="mon11">
+            <input type="checkbox" /><span
+              >9:45–10:15 → Chill / music / relax</span
+            >
+          </div>
+          <div class="task pink low" draggable="true" id="mon12">
+            <input type="checkbox" /><span>10:15–10:45 → Plan tomorrow</span>
+          </div>
+          <div class="task pink low" draggable="true" id="mon13">
+            <input type="checkbox" /><span>11:00 → Sleep</span>
+          </div>
+        </div>
+        <textarea class="notes" placeholder="Add your notes here..."></textarea>
+        <button onclick="addTask('monTasks')">+ Add Task</button>
+      </div>
+
+      <!-- Weekend -->
+      <div class="day" data-day="weekend">
+        <h2 onclick="toggleTasks(this)">Weekend – Flexible ▼</h2>
+        <div class="progress-container">
+          <div class="progress-bar" id="progressWeekend"></div>
+        </div>
+        <div class="tasks" id="weekendTasks">
+          <div class="task blue medium" draggable="true" id="sat1">
+            <input type="checkbox" /><span>Morning: Uni Study</span>
+          </div>
+          <div class="task green medium" draggable="true" id="sat2">
+            <input type="checkbox" /><span>Afternoon: Coding / Review</span>
+          </div>
+          <div class="task pink medium" draggable="true" id="sat3">
+            <input type="checkbox" /><span>Night: Portfolio / Relax</span>
+          </div>
+        </div>
+        <textarea class="notes" placeholder="Add your notes here..."></textarea>
+        <button onclick="addTask('weekendTasks')">+ Add Task</button>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend">
+        <div>
+          <div class="color-box blue"></div>
+          Uni / Academic
+        </div>
+        <div>
+          <div class="color-box green"></div>
+          Coding / Portfolio
+        </div>
+        <div>
+          <div class="color-box orange"></div>
+          Course / English
+        </div>
+        <div>
+          <div class="color-box pink"></div>
+          Chill / Mental Health
+        </div>
+      </div>
+    </div>
+
+    <!-- Confetti Canvas -->
+    <canvas id="confetti"></canvas>
+
+    <script>
+      /* --- Background Gradient based on Time --- */
+      function updateBackground() {
+        const hour = new Date().getHours();
+        if (hour < 6)
+          document.body.style.background = "#e0d4ff"; // Night
+        else if (hour < 12)
+          document.body.style.background = "#fff3f0"; // Morning
+        else if (hour < 18)
+          document.body.style.background = "#fef6e4"; // Day
+        else document.body.style.background = "#d4e4ff"; // Evening
+      }
+      setInterval(updateBackground, 60000);
+      updateBackground();
+
+      /* --- Motivational Quotes --- */
+      const quotes = [
+        "Keep going, you're doing great!",
+        "Small steps every day lead to big results.",
+        "Focus on progress, not perfection.",
+        "Your future self will thank you.",
+        "Stay positive and work hard!",
+      ];
+      document.getElementById("quote").innerText =
+        quotes[new Date().getDate() % quotes.length];
+
+      /* --- Toggle Tasks --- */
+      function toggleTasks(header) {
+        const tasks = header.nextElementSibling.nextElementSibling; // Skip progress bar
+        tasks.style.display =
+          tasks.style.display === "block" ? "none" : "block";
+      }
+
+      /* --- Checkbox Persistence and Progress Bar --- */
+      function updateProgress(containerId, progressId) {
+        const container = document.getElementById(containerId);
+        const checkboxes = container.querySelectorAll("input[type=checkbox]");
+        let checked = 0;
+        checkboxes.forEach((cb) => {
+          if (cb.checked) checked++;
+        });
+        const progress = document.getElementById(progressId);
+        progress.style.width = (checked / checkboxes.length) * 100 + "%";
+
+        if (checked === checkboxes.length) triggerConfetti();
+      }
+
+      document.querySelectorAll("input[type=checkbox]").forEach((cb) => {
+        cb.checked = localStorage.getItem(cb.id) === "true";
+        cb.addEventListener("change", () => {
+          localStorage.setItem(cb.id, cb.checked);
+          updateProgress(
+            cb.closest(".tasks").id,
+            cb.closest(".tasks").id === "monTasks"
+              ? "progressMon"
+              : "progressWeekend",
+          );
+        });
+      });
+
+      /* Initialize progress bars */
+      updateProgress("monTasks", "progressMon");
+      updateProgress("weekendTasks", "progressWeekend");
+
+      /* --- Drag & Drop Tasks --- */
+      let dragged;
+      document.querySelectorAll(".task").forEach((task) => {
+        task.addEventListener("dragstart", (e) => {
+          dragged = e.target;
+        });
+        task.addEventListener("dragover", (e) => e.preventDefault());
+        task.addEventListener("drop", (e) => {
+          e.preventDefault();
+          const parent = e.target.closest(".tasks");
+          const ref = e.target.closest(".task");
+          if (parent && dragged !== ref)
+            parent.insertBefore(dragged, ref.nextSibling);
+        });
+      });
+
+      /* --- Add Custom Task --- */
+      function addTask(containerId) {
+        const container = document.getElementById(containerId);
+        const id = "task" + Date.now();
+        const taskDiv = document.createElement("div");
+        taskDiv.className = "task blue medium";
+        taskDiv.setAttribute("draggable", "true");
+        taskDiv.id = id;
+        taskDiv.innerHTML =
+          '<input type="checkbox"><span contenteditable="true">New Task</span>';
+        container.appendChild(taskDiv);
+
+        taskDiv.addEventListener("dragstart", (e) => {
+          dragged = e.target;
+        });
+        taskDiv.addEventListener("dragover", (e) => e.preventDefault());
+        taskDiv.addEventListener("drop", (e) => {
+          e.preventDefault();
+          const parent = e.target.closest(".tasks");
+          const ref = e.target.closest(".task");
+          if (parent && dragged !== ref)
+            parent.insertBefore(dragged, ref.nextSibling);
+        });
+        const checkbox = taskDiv.querySelector("input");
+        checkbox.addEventListener("change", () => {
+          updateProgress(
+            containerId,
+            containerId === "monTasks" ? "progressMon" : "progressWeekend",
+          );
+        });
+      }
+
+      /* --- Confetti --- */
+      const canvas = document.getElementById("confetti");
+      const ctx = canvas.getContext("2d");
+      let confettiPieces = [];
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      function ConfettiPiece() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height - 100;
+        this.size = Math.random() * 10 + 5;
+        this.speed = Math.random() * 3 + 2;
+        this.color = [
+          "#f94144",
+          "#f3722c",
+          "#f9c74f",
+          "#90be6d",
+          "#43aa8b",
+          "#577590",
+        ][Math.floor(Math.random() * 6)];
+        this.angle = Math.random() * 360;
+      }
+      function generateConfetti() {
+        confettiPieces = [];
+        for (let i = 0; i < 100; i++) confettiPieces.push(new ConfettiPiece());
+      }
+      function drawConfetti() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        confettiPieces.forEach((p) => {
+          ctx.fillStyle = p.color;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+          p.y += p.speed;
+          if (p.y > canvas.height) p.y = -10;
+        });
+        requestAnimationFrame(drawConfetti);
+      }
+      function triggerConfetti() {
+        generateConfetti();
+        drawConfetti();
+        setTimeout(() => {
+          confettiPieces = [];
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }, 3000);
+      }
+      window.addEventListener("resize", () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+
+      // Array of day names
+      const dayNames = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ];
+
+      // Get today's day
+      const today = new Date();
+      const todayName = dayNames[today.getDay()]; // e.g., "Tuesday"
+
+      // Find all day headers
+      document.querySelectorAll(".day h2").forEach((header) => {
+        // Replace the text with today if it matches
+        if (header.textContent.includes("▼")) {
+          const dayText = header.parentElement.getAttribute("data-day"); // optional for custom logic
+          // Replace the static day with today's day
+          header.textContent = `${todayName} ▼`;
+        }
+      });
+      document.querySelectorAll(".day").forEach((card) => {
+        if (card.querySelector("h2").textContent.includes(todayName)) {
+          card.style.border = "2px solid #3399ff"; // highlight
+          card.style.boxShadow = "0 12px 30px rgba(0,0,0,0.15)";
+        }
+      });
+    </script>
+  </body>
+</html>
