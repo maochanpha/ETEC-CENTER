@@ -116,9 +116,10 @@
     $('#save').click(function() {
       const name = $('#name').val()
       const gender = $('#gender').val()
-      const profile = $('#file')[0].files[0];
+      const profile = $('#file')[0].files[0]
+      const imgurl = URL.createObjectURL(profile)
 
-      let formdata= new FormData()
+      let formdata = new FormData()
       formdata.append('file', profile)
       formdata.append('name', name)
       formdata.append('gender', gender)
@@ -128,9 +129,26 @@
         data: formdata,
         contentType: false,
         processData: false,
-        success: function(res) {
+        success: function(response) {
           $('#form').trigger('reset');
-          alert(res)
+          $('tbody').append(`      
+          <tr>
+          <td>${response}</td>
+          <td>${name}</td>
+          <td>${gender}</td>
+          <td>
+              <img src="${imgurl}" width="50px">
+          </td>
+          <td>
+              <div class="d-flex justify-content-center gap-2">
+                <form action="delete.php" method="post">
+                <input type="hidden" name="id" value="' . $row['id'] . '">
+                <button name="btnDelete" class="btn btn-outline-danger" onclick="return confirm(\'Are you sure?\')">Delete</button>
+                </form>
+                <button id="edit" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#exampleModal">Edit</button>
+                </div>
+          </td>
+      </tr>`)
         }
       })
     })
